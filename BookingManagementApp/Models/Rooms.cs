@@ -2,14 +2,14 @@
 
 namespace BookingManagementApp.Models
 {
-    [Table(name: "tb_m_rooms")]
-    public class Rooms : BaseEntity
+    [Table(name: "tb_m_rooms")] // Membuat Tabel Rooms
+    public class Rooms : BaseEntity // Inheritence Ke Class BaseEntity Abstract
     {
-        [Column(name: "name", TypeName = "nvarchar(100)")]
+        [Column(name: "name", TypeName = "nvarchar(100)")] // Membuat Column Tabel Name
         public string Name { get; set; }
-        [Column(name: "floor")]
+        [Column(name: "floor")] // Membuat Column Tabel Floor
         public int Floor { get; set; }
-        [Column(name: "capacity")]
+        [Column(name: "capacity")] // Membuat Column Tabel Capacity
         public int Capacity { get; set; }
     }
 }

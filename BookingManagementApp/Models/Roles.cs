@@ -2,10 +2,10 @@
 
 namespace BookingManagementApp.Models
 {
-    [Table(name: "tb_m_roles")]
-    public class Roles : BaseEntity
+    [Table(name: "tb_m_roles")] // Membuat Tabel Roles
+    public class Roles : BaseEntity // Inheritence Ke Class BaseEntity Abstract
     {
-        [Column(name: "name", TypeName = "nvarchar(100)")]
+        [Column(name: "name", TypeName = "nvarchar(100)")] // Membuat Column Tabel Name
         public string Name { get; set; }
     }
 }

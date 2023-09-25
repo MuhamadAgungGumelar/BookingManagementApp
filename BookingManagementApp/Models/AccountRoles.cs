@@ -2,12 +2,12 @@
 
 namespace BookingManagementApp.Models
 {
-    [Table(name: "tb_m_accounts_roles")]
-    public class AccountRoles : BaseEntity
+    [Table(name: "tb_m_accounts_roles")] // Membuat Tabel Account Roles
+    public class AccountRoles : BaseEntity // Inheritence Ke Class BaseEntity Abstract
     {
-        [Column(name: "account guid")]
+        [Column(name: "account guid")] // Membuat Column Tabel Account_Guid
         public Guid AccountGuid { get; set; }
-        [Column(name: "role guid")]
+        [Column(name: "role guid")] // Membuat Column Tabel Role_Guid
         public Guid RoleGuid { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace BookingManagementApp.Utilities.Enums;
-public enum StatuslLevel
+public enum StatuslLevel // Membuat Tipe Data Enum Untuk StatusLevel
 {
     Requested,
     Approved,
