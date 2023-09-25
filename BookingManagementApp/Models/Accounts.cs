@@ -7,8 +7,6 @@ namespace BookingManagementApp.Models
     {
         [Column(name: "password", TypeName = "nvarchar(max)")] // Membuat Column Tabel Password
         public string Password { get; set; } 
-        [Column(name: "is_deleted")] // Membuat Column Tabel Is_Deleted
-        public bool IsDeleted { get; set; }
         [Column(name: "otp")] // Membuat Column Tabel Otp
         public int OTP { get; set; }
         [Column(name: "is_used")] // Membuat Column Tabel Is_Used

@@ -7,7 +7,7 @@ namespace BookingManagementApp.Models
     public class Employees : BaseEntity // Inheritence Ke Class BaseEntity Abstract
     { 
         [Column(name: "nik", TypeName = "nchar(6)")] // Membuat Column Tabel Nik
-        public string NIK { get; set; }
+        public string Nik { get; set; }
         [Column(name: "first_name", TypeName = "nvarchar(100)")] // Membuat Column Tabel First_Name
         public string FirstName { get; set; }
         [Column(name: "last_name", TypeName = "nvarchar(100)")] // Membuat Column Tabel Last_Name
