@@ -22,5 +22,10 @@ namespace BookingManagementApp.Models
         public string Email { get; set; }
         [Column(name: "phone_number", TypeName = "nvarchar(20)")] // Membuat Column Tabel Phone_Number
         public string PhoneNumber { get; set; }
+
+        // Cardinality
+        public Educations Educations { get; set; }
+        public ICollection<Bookings>? Bookings { get; set; }
+        public Accounts? Accounts { get; set; }
     }
 }

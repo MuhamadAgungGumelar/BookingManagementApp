@@ -7,5 +7,8 @@ namespace BookingManagementApp.Models
     {
         [Column(name: "name", TypeName = "nvarchar(100)")] // Membuat Column Tabel Name
         public string Name { get; set; }
+
+        //Cardinality
+        public ICollection<AccountRoles>? AccountRoles { get; set; }
     }
 }

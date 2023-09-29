@@ -9,5 +9,8 @@ namespace BookingManagementApp.Models
         public string Code { get; set; }
         [Column(name: "name", TypeName = "nvarchar(100)")] // Membuat Column Tabel Name
         public string Name { get; set; }
+
+        //Cardinality
+        public ICollection<Educations>? Educations { get; set; }
     }
 }

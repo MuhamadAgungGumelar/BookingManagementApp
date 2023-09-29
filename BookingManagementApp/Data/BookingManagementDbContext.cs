@@ -29,6 +29,54 @@ namespace BookingManagementApp.Data;
             e.Email,
             e.PhoneNumber
         }).IsUnique();
+
+        // University has many Educations
+        modelBuilder.Entity<Universities>()
+            .HasMany(e => e.Educations)
+            .WithOne(u => u.universities)
+            .HasForeignKey(e => e.UniversityGuid);
+        /*
+            modelBuilder.Entity<Educations>()
+                .HasOne(u => u.universities)
+                .WithMany(e => e.Educations)
+                .HasForeignKey(u => u.UniversityGuid);
+        */
+
+        // Educations has one Employees
+        modelBuilder.Entity<Educations>()
+            .HasOne(em => em.Employees)
+            .WithOne(e => e.Educations)
+            .HasForeignKey<Educations>(e => e.Guid);
+
+        // Employees has many Bookings
+        modelBuilder.Entity<Employees>()
+            .HasMany(b => b.Bookings)
+            .WithOne(em => em.Employees)
+            .HasForeignKey(b => b.EmployeeGuid);
+
+        // Rooms has many Bookings
+        modelBuilder.Entity<Rooms>()
+            .HasMany(b => b.Bookings)
+            .WithOne(r => r.Rooms)
+            .HasForeignKey(b => b.RoomGuid);
+
+        //Employess has one Accounts
+        modelBuilder.Entity<Employees>()
+            .HasOne(a => a.Accounts)
+            .WithOne(em => em.Employees)
+            .HasForeignKey<Accounts>(a => a.Guid);
+
+        //Accounts has many Accounts Roles
+        modelBuilder.Entity<Accounts>()
+            .HasMany(ar => ar.AccountRoles)
+            .WithOne(a => a.Accounts)
+            .HasForeignKey(ar => ar.AccountGuid);
+
+        //Roles has many Accounts roles
+        modelBuilder.Entity<Roles>()
+            .HasMany(ar => ar.AccountRoles)
+            .WithOne(rl => rl.Roles)
+            .HasForeignKey(ar => ar.RoleGuid);
     }
 
 

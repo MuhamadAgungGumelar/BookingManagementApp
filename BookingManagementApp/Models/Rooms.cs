@@ -11,5 +11,8 @@ namespace BookingManagementApp.Models
         public int Floor { get; set; }
         [Column(name: "capacity")] // Membuat Column Tabel Capacity
         public int Capacity { get; set; }
+
+        //Cardinality
+        public  ICollection<Bookings> Bookings { get; set; }
     }
 }

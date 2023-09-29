@@ -13,5 +13,9 @@ namespace BookingManagementApp.Models
         public float Gpa { get; set; }
         [Column(name: "university_guid")] // Membuat Column Tabel University_Guid
         public Guid UniversityGuid { get; set; }
+
+
+        public Universities? universities { get; set; }
+        public Employees? Employees { get; set; }
     }
 }

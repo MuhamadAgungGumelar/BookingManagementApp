@@ -4,6 +4,7 @@ using BookingManagementApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingManagementApp.Migrations
 {
     [DbContext(typeof(BookingManagementDbContext))]
-    partial class BookingManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230929035041_Added_Cardinality_Relationship")]
+    partial class Added_Cardinality_Relationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

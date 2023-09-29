@@ -13,5 +13,9 @@ namespace BookingManagementApp.Models
         public bool IsUsed { get; set; }
         [Column(name: "expired_time")] // Membuat Column Tabel Expired_Time
         public DateTime ExpiredTime { get; set; }
+
+        //Cardinality
+        public Employees? Employees { get; set; }
+        public ICollection<AccountRoles>? AccountRoles { get; set; }
     }
 }

@@ -9,5 +9,9 @@ namespace BookingManagementApp.Models
         public Guid AccountGuid { get; set; }
         [Column(name: "role guid")] // Membuat Column Tabel Role_Guid
         public Guid RoleGuid { get; set; }
+
+        //Cardinality
+        public Accounts? Accounts { get; set; }
+        public Roles? Roles { get; set; }
     }
 }

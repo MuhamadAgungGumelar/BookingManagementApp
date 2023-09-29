@@ -18,5 +18,9 @@ namespace BookingManagementApp.Models
         public Guid RoomGuid { get; set; }
         [Column(name: "employee_id")] // Membuat Column Tabel Employee_Id
         public Guid EmployeeGuid { get; set; }
+
+        //Cardiinality
+        public Employees? Employees { get; set; }
+        public Rooms? Rooms { get; set; } 
     }
 }
