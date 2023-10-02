@@ -6,19 +6,19 @@ namespace BookingManagementApp.Controllers
 {
     [ApiController]
     [Route("/api[controller]")]
-    public class UniversitiesController : ControllerBase
+    public class EducationsController : ControllerBase
     {
-        private readonly IUniversitiesRepository _universitiesRepository;
+        private readonly IEducationsRepository _educationRepository;
 
-        public UniversitiesController(IUniversitiesRepository universitiesRepository)
+        public EducationsController(IEducationsRepository educationRepository)
         {
-            _universitiesRepository = universitiesRepository;
+            _educationRepository = educationRepository;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _universitiesRepository.GetAll();
+            var result = _educationRepository.GetAll();
             if (!result.Any())
             {
                 return NotFound("Data Not Found");
@@ -30,7 +30,7 @@ namespace BookingManagementApp.Controllers
         [HttpGet("{guid}")]
         public IActionResult Get(Guid guid)
         {
-            var result = _universitiesRepository.GetByGuid(guid);
+            var result = _educationRepository.GetByGuid(guid);
 
             if (result is null)
             {
@@ -41,9 +41,9 @@ namespace BookingManagementApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Universities universities)
+        public IActionResult Create(Educations education)
         {
-            var result = _universitiesRepository.Create(universities);
+            var result = _educationRepository.Create(education);
             if (result is null)
             {
                 return BadRequest("Failed to create data");
@@ -53,9 +53,9 @@ namespace BookingManagementApp.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(Universities universities)
+        public IActionResult Update(Educations education)
         {
-            var result = _universitiesRepository.Update(universities);
+            var result = _educationRepository.Update(education);
             if (result is false)
             {
                 return BadRequest("Failed to update data");
@@ -67,14 +67,14 @@ namespace BookingManagementApp.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var universities = _universitiesRepository.GetByGuid(guid);
+            var education = _educationRepository.GetByGuid(guid);
 
-            if (universities is null)
+            if (education is null)
             {
                 return NotFound("Data Not Found");
             }
 
-            _universitiesRepository.Delete(guid);
+            _educationRepository.Delete(guid);
 
             return Ok("Data deleted successfully");
         }

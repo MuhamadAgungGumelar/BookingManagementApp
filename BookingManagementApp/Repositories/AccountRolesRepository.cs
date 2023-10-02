@@ -1,46 +1,46 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.Data;
 using BookingManagementApp.Models;
-using System;
 
 namespace BookingManagementApp.Repositories
 {
-    public class UniversitiesRepository : IUniversitiesRepository
+    public class AccountRolesRepository : IAccountRolesRepository
     {
         private readonly BookingManagementDbContext _context;
-        public UniversitiesRepository(BookingManagementDbContext context)
+        public AccountRolesRepository(BookingManagementDbContext context)
         {
             _context = context;
         }
 
-        public IEnumerable<Universities> GetAll()
+        public IEnumerable<AccountRoles> GetAll()
         {
-            return _context.Set<Universities>().ToList();
+            return _context.Set<AccountRoles>().ToList();
         }
 
-        public Universities? GetByGuid(Guid guid)
+        public AccountRoles? GetByGuid(Guid guid)
         {
-            return _context.Set<Universities>().Find(guid);
+            return _context.Set<AccountRoles>().Find(guid);
         }
 
-        public Universities? Create(Universities universities)
+        public AccountRoles? Create(AccountRoles accountRole)
         {
             try
             {
-                _context.Set<Universities>().Add(universities);
+                _context.Set<AccountRoles>().Add(accountRole);
                 _context.SaveChanges();
-                return universities;
-            }catch
+                return accountRole;
+            }
+            catch
             {
-                return new Universities();
+                return new AccountRoles();
             }
         }
 
-        public bool Update(Universities universities)
+        public bool Update(AccountRoles accountRole)
         {
             try
             {
-                _context.Set<Universities>().Update(universities);
+                _context.Set<AccountRoles>().Update(accountRole);
                 _context.SaveChanges();
                 return true;
             }
@@ -54,8 +54,8 @@ namespace BookingManagementApp.Repositories
         {
             try
             {
-                var universities = _context.Set<Universities>().Find(guid);
-                _context.Set<Universities>().Remove(universities);
+                var accountRole = _context.Set<AccountRoles>().Find(guid);
+                _context.Set<AccountRoles>().Remove(accountRole);
                 _context.SaveChanges();
                 return true;
             }

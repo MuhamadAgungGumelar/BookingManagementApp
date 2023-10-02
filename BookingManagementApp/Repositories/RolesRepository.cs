@@ -1,46 +1,46 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.Data;
 using BookingManagementApp.Models;
-using System;
 
 namespace BookingManagementApp.Repositories
 {
-    public class UniversitiesRepository : IUniversitiesRepository
+    public class RolesRepository : IRolesRepository
     {
         private readonly BookingManagementDbContext _context;
-        public UniversitiesRepository(BookingManagementDbContext context)
+        public RolesRepository(BookingManagementDbContext context)
         {
             _context = context;
         }
 
-        public IEnumerable<Universities> GetAll()
+        public IEnumerable<Roles> GetAll()
         {
-            return _context.Set<Universities>().ToList();
+            return _context.Set<Roles>().ToList();
         }
 
-        public Universities? GetByGuid(Guid guid)
+        public Roles? GetByGuid(Guid guid)
         {
-            return _context.Set<Universities>().Find(guid);
+            return _context.Set<Roles>().Find(guid);
         }
 
-        public Universities? Create(Universities universities)
+        public Roles? Create(Roles role)
         {
             try
             {
-                _context.Set<Universities>().Add(universities);
+                _context.Set<Roles>().Add(role);
                 _context.SaveChanges();
-                return universities;
-            }catch
+                return role;
+            }
+            catch
             {
-                return new Universities();
+                return new Roles();
             }
         }
 
-        public bool Update(Universities universities)
+        public bool Update(Roles role)
         {
             try
             {
-                _context.Set<Universities>().Update(universities);
+                _context.Set<Roles>().Update(role);
                 _context.SaveChanges();
                 return true;
             }
@@ -54,8 +54,8 @@ namespace BookingManagementApp.Repositories
         {
             try
             {
-                var universities = _context.Set<Universities>().Find(guid);
-                _context.Set<Universities>().Remove(universities);
+                var role = _context.Set<Roles>().Find(guid);
+                _context.Set<Roles>().Remove(role);
                 _context.SaveChanges();
                 return true;
             }

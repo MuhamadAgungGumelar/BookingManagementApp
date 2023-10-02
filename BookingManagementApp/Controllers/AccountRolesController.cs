@@ -1,24 +1,25 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.Models;
+using BookingManagementApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingManagementApp.Controllers
 {
     [ApiController]
     [Route("/api[controller]")]
-    public class UniversitiesController : ControllerBase
+    public class AccountRolesController : ControllerBase
     {
-        private readonly IUniversitiesRepository _universitiesRepository;
+        private readonly IAccountRolesRepository _accountRoleRepository;
 
-        public UniversitiesController(IUniversitiesRepository universitiesRepository)
+        public AccountRolesController(IAccountRolesRepository accountRoleRepository)
         {
-            _universitiesRepository = universitiesRepository;
+            _accountRoleRepository = accountRoleRepository;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _universitiesRepository.GetAll();
+            var result = _accountRoleRepository.GetAll();
             if (!result.Any())
             {
                 return NotFound("Data Not Found");
@@ -30,7 +31,7 @@ namespace BookingManagementApp.Controllers
         [HttpGet("{guid}")]
         public IActionResult Get(Guid guid)
         {
-            var result = _universitiesRepository.GetByGuid(guid);
+            var result = _accountRoleRepository.GetByGuid(guid);
 
             if (result is null)
             {
@@ -41,9 +42,9 @@ namespace BookingManagementApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Universities universities)
+        public IActionResult Create(AccountRoles accountRole)
         {
-            var result = _universitiesRepository.Create(universities);
+            var result = _accountRoleRepository.Create(accountRole);
             if (result is null)
             {
                 return BadRequest("Failed to create data");
@@ -53,9 +54,9 @@ namespace BookingManagementApp.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(Universities universities)
+        public IActionResult Update(AccountRoles accountRole)
         {
-            var result = _universitiesRepository.Update(universities);
+            var result = _accountRoleRepository.Update(accountRole);
             if (result is false)
             {
                 return BadRequest("Failed to update data");
@@ -67,14 +68,14 @@ namespace BookingManagementApp.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var universities = _universitiesRepository.GetByGuid(guid);
+            var accountRole = _accountRoleRepository.GetByGuid(guid);
 
-            if (universities is null)
+            if (accountRole is null)
             {
                 return NotFound("Data Not Found");
             }
 
-            _universitiesRepository.Delete(guid);
+            _accountRoleRepository.Delete(guid);
 
             return Ok("Data deleted successfully");
         }

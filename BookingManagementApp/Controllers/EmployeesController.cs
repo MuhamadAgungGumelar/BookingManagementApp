@@ -1,24 +1,25 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.Models;
+using BookingManagementApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingManagementApp.Controllers
 {
     [ApiController]
     [Route("/api[controller]")]
-    public class UniversitiesController : ControllerBase
+    public class EmployeesController : ControllerBase
     {
-        private readonly IUniversitiesRepository _universitiesRepository;
+        private readonly IEmployeesRepository _employeeRepository;
 
-        public UniversitiesController(IUniversitiesRepository universitiesRepository)
+        public EmployeesController(IEmployeesRepository employeeRepository)
         {
-            _universitiesRepository = universitiesRepository;
+            _employeeRepository = employeeRepository;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _universitiesRepository.GetAll();
+            var result = _employeeRepository.GetAll();
             if (!result.Any())
             {
                 return NotFound("Data Not Found");
@@ -30,7 +31,7 @@ namespace BookingManagementApp.Controllers
         [HttpGet("{guid}")]
         public IActionResult Get(Guid guid)
         {
-            var result = _universitiesRepository.GetByGuid(guid);
+            var result = _employeeRepository.GetByGuid(guid);
 
             if (result is null)
             {
@@ -41,9 +42,9 @@ namespace BookingManagementApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Universities universities)
+        public IActionResult Create(Employees employee)
         {
-            var result = _universitiesRepository.Create(universities);
+            var result = _employeeRepository.Create(employee);
             if (result is null)
             {
                 return BadRequest("Failed to create data");
@@ -53,9 +54,9 @@ namespace BookingManagementApp.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(Universities universities)
+        public IActionResult Update(Employees employee)
         {
-            var result = _universitiesRepository.Update(universities);
+            var result = _employeeRepository.Update(employee);
             if (result is false)
             {
                 return BadRequest("Failed to update data");
@@ -67,14 +68,14 @@ namespace BookingManagementApp.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var universities = _universitiesRepository.GetByGuid(guid);
+            var employee = _employeeRepository.GetByGuid(guid);
 
-            if (universities is null)
+            if (employee is null)
             {
                 return NotFound("Data Not Found");
             }
 
-            _universitiesRepository.Delete(guid);
+            _employeeRepository.Delete(guid);
 
             return Ok("Data deleted successfully");
         }

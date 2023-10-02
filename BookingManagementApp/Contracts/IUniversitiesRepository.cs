@@ -8,6 +8,6 @@ namespace BookingManagementApp.Contracts
         Universities? GetByGuid(Guid guid);
         Universities? Create(Universities universities);
         bool Update(Universities universities);
-        bool Delete(Universities universities);
+        bool Delete(Guid guid);
     }
 }

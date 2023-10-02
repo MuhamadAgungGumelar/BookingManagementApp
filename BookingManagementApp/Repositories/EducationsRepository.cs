@@ -1,46 +1,46 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.Data;
 using BookingManagementApp.Models;
-using System;
 
 namespace BookingManagementApp.Repositories
 {
-    public class UniversitiesRepository : IUniversitiesRepository
+    public class EducationsRepository : IEducationsRepository
     {
         private readonly BookingManagementDbContext _context;
-        public UniversitiesRepository(BookingManagementDbContext context)
+        public EducationsRepository(BookingManagementDbContext context)
         {
             _context = context;
         }
 
-        public IEnumerable<Universities> GetAll()
+        public IEnumerable<Educations> GetAll()
         {
-            return _context.Set<Universities>().ToList();
+            return _context.Set<Educations>().ToList();
         }
 
-        public Universities? GetByGuid(Guid guid)
+        public Educations? GetByGuid(Guid guid)
         {
-            return _context.Set<Universities>().Find(guid);
+            return _context.Set<Educations>().Find(guid);
         }
 
-        public Universities? Create(Universities universities)
+        public Educations? Create(Educations education)
         {
             try
             {
-                _context.Set<Universities>().Add(universities);
+                _context.Set<Educations>().Add(education);
                 _context.SaveChanges();
-                return universities;
-            }catch
+                return education;
+            }
+            catch
             {
-                return new Universities();
+                return new Educations();
             }
         }
 
-        public bool Update(Universities universities)
+        public bool Update(Educations education)
         {
             try
             {
-                _context.Set<Universities>().Update(universities);
+                _context.Set<Educations>().Update(education);
                 _context.SaveChanges();
                 return true;
             }
@@ -54,8 +54,8 @@ namespace BookingManagementApp.Repositories
         {
             try
             {
-                var universities = _context.Set<Universities>().Find(guid);
-                _context.Set<Universities>().Remove(universities);
+                var education = _context.Set<Educations>().Find(guid);
+                _context.Set<Educations>().Remove(education);
                 _context.SaveChanges();
                 return true;
             }

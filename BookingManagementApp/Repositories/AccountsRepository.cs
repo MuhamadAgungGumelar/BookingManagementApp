@@ -1,46 +1,46 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.Data;
 using BookingManagementApp.Models;
-using System;
 
 namespace BookingManagementApp.Repositories
 {
-    public class UniversitiesRepository : IUniversitiesRepository
+    public class AccountsRepository : IAccountsRepository
     {
         private readonly BookingManagementDbContext _context;
-        public UniversitiesRepository(BookingManagementDbContext context)
+        public AccountsRepository(BookingManagementDbContext context)
         {
             _context = context;
         }
 
-        public IEnumerable<Universities> GetAll()
+        public IEnumerable<Accounts> GetAll()
         {
-            return _context.Set<Universities>().ToList();
+            return _context.Set<Accounts>().ToList();
         }
 
-        public Universities? GetByGuid(Guid guid)
+        public Accounts? GetByGuid(Guid guid)
         {
-            return _context.Set<Universities>().Find(guid);
+            return _context.Set<Accounts>().Find(guid);
         }
 
-        public Universities? Create(Universities universities)
+        public Accounts? Create(Accounts account)
         {
             try
             {
-                _context.Set<Universities>().Add(universities);
+                _context.Set<Accounts>().Add(account);
                 _context.SaveChanges();
-                return universities;
-            }catch
+                return account;
+            }
+            catch
             {
-                return new Universities();
+                return new Accounts();
             }
         }
 
-        public bool Update(Universities universities)
+        public bool Update(Accounts account)
         {
             try
             {
-                _context.Set<Universities>().Update(universities);
+                _context.Set<Accounts>().Update(account);
                 _context.SaveChanges();
                 return true;
             }
@@ -54,8 +54,8 @@ namespace BookingManagementApp.Repositories
         {
             try
             {
-                var universities = _context.Set<Universities>().Find(guid);
-                _context.Set<Universities>().Remove(universities);
+                var account = _context.Set<Accounts>().Find(guid);
+                _context.Set<Accounts>().Remove(account);
                 _context.SaveChanges();
                 return true;
             }
