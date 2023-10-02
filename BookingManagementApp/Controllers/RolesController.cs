@@ -1,4 +1,6 @@
 ﻿using BookingManagementApp.Contracts;
+using BookingManagementApp.DTOs.Role;
+using BookingManagementApp.DTOs.University;
 using BookingManagementApp.Models;
 using BookingManagementApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookingManagementApp.Controllers
 {
     [ApiController]
-    [Route("/api[controller]")]
+    [Route("api/[controller]")]
     public class RolesController : ControllerBase
     {
         private readonly IRolesRepository _roleRepository;
@@ -25,7 +27,9 @@ namespace BookingManagementApp.Controllers
                 return NotFound("Data Not Found");
             }
 
-            return Ok(result);
+            var data = result.Select(x => (RoleDto)x);
+
+            return Ok(data);
         }
 
         [HttpGet("{guid}")]
@@ -38,46 +42,58 @@ namespace BookingManagementApp.Controllers
                 return NotFound("Data Not Found");
             }
 
-            return Ok(result);
+            return Ok((RoleDto) result);
         }
 
         [HttpPost]
-        public IActionResult Create(Roles role)
+        public IActionResult Create(CreateRoleDto createRoleDto)
         {
-            var result = _roleRepository.Create(role);
+            var result = _roleRepository.Create(createRoleDto);
             if (result is null)
             {
                 return BadRequest("Failed to create data");
             }
 
-            return Ok(result);
+            return Ok((RoleDto) result);
         }
 
         [HttpPut]
-        public IActionResult Update(Roles role)
+        public IActionResult Update(RoleDto roleDto)
         {
-            var result = _roleRepository.Update(role);
-            if (result is false)
+            var entity = _roleRepository.GetByGuid(roleDto.Guid);
+            if (entity is null)
+            {
+                return NotFound("Id Not Found");
+            }
+
+            Roles toUpdate = roleDto;
+            toUpdate.CreatedDate = entity.CreatedDate;
+
+            var result = _roleRepository.Update(toUpdate);
+            if (!result)
             {
                 return BadRequest("Failed to update data");
             }
 
-            return Ok(result);
+            return Ok("Data Updated");
         }
 
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var role = _roleRepository.GetByGuid(guid);
-
-            if (role is null)
+            var entity = _roleRepository.GetByGuid(guid);
+            if (entity is null)
             {
-                return NotFound("Data Not Found");
+                return NotFound("Id Not Found");
             }
 
-            _roleRepository.Delete(guid);
+            var result = _roleRepository.Delete(entity);
+            if (!result)
+            {
+                return BadRequest("Failed to delete data");
+            }
 
-            return Ok("Data deleted successfully");
+            return Ok("Data Deleted");
         }
     }
 }

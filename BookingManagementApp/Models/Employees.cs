@@ -24,7 +24,7 @@ namespace BookingManagementApp.Models
         public string PhoneNumber { get; set; }
 
         // Cardinality
-        public Educations Educations { get; set; }
+        public Educations? Educations { get; set; }
         public ICollection<Bookings>? Bookings { get; set; }
         public Accounts? Accounts { get; set; }
     }

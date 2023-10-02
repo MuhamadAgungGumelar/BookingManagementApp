@@ -1,4 +1,6 @@
 ﻿using BookingManagementApp.Contracts;
+using BookingManagementApp.DTOs.Account;
+using BookingManagementApp.DTOs.Booking;
 using BookingManagementApp.Models;
 using BookingManagementApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookingManagementApp.Controllers
 {
     [ApiController]
-    [Route("/api[controller]")]
+    [Route("api/[controller]")]
     public class AccountsController : ControllerBase
     {
         private readonly IAccountsRepository _accountRepository;
@@ -25,7 +27,9 @@ namespace BookingManagementApp.Controllers
                 return NotFound("Data Not Found");
             }
 
-            return Ok(result);
+            var data = result.Select(x => (AccountDto)x);
+
+            return Ok(data);
         }
 
         [HttpGet("{guid}")]
@@ -38,46 +42,58 @@ namespace BookingManagementApp.Controllers
                 return NotFound("Data Not Found");
             }
 
-            return Ok(result);
+            return Ok((AccountDto) result);
         }
 
         [HttpPost]
-        public IActionResult Create(Accounts account)
+        public IActionResult Create(CreateAccountDto createAccountDto)
         {
-            var result = _accountRepository.Create(account);
+            var result = _accountRepository.Create(createAccountDto);
             if (result is null)
             {
                 return BadRequest("Failed to create data");
             }
 
-            return Ok(result);
+            return Ok((AccountDto)result);
         }
 
         [HttpPut]
-        public IActionResult Update(Accounts account)
+        public IActionResult Update(AccountDto accountDto)
         {
-            var result = _accountRepository.Update(account);
-            if (result is false)
+            var entity = _accountRepository.GetByGuid(accountDto.Guid);
+            if (entity is null)
+            {
+                return NotFound("Id Not Found");
+            }
+
+            Accounts toUpdate = accountDto;
+            toUpdate.CreatedDate = entity.CreatedDate;
+
+            var result = _accountRepository.Update(toUpdate);
+            if (!result)
             {
                 return BadRequest("Failed to update data");
             }
 
-            return Ok(result);
+            return Ok("Data Updated");
         }
 
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var account = _accountRepository.GetByGuid(guid);
-
-            if (account is null)
+            var entity = _accountRepository.GetByGuid(guid);
+            if (entity is null)
             {
-                return NotFound("Data Not Found");
+                return NotFound("Id Not Found");
             }
 
-            _accountRepository.Delete(guid);
+            var result = _accountRepository.Delete(entity);
+            if (!result)
+            {
+                return BadRequest("Failed to delete data");
+            }
 
-            return Ok("Data deleted successfully");
+            return Ok("Data Deleted");
         }
     }
 }

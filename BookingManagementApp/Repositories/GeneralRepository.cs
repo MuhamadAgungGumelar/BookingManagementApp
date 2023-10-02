@@ -1,46 +1,48 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.Data;
-using BookingManagementApp.Models;
 
 namespace BookingManagementApp.Repositories
 {
-    public class EmployeesRepostitory : IEmployeesRepository
+    public class GeneralRepository<TEntity> : IGeneralRepository<TEntity> where TEntity : class
     {
         private readonly BookingManagementDbContext _context;
-        public EmployeesRepostitory(BookingManagementDbContext context)
+
+        protected GeneralRepository(BookingManagementDbContext context)
         {
             _context = context;
         }
 
-        public IEnumerable<Employees> GetAll()
+        public IEnumerable<TEntity> GetAll()
         {
-            return _context.Set<Employees>().ToList();
+            return _context.Set<TEntity>().ToList();
         }
 
-        public Employees? GetByGuid(Guid guid)
+        public TEntity? GetByGuid(Guid guid)
         {
-            return _context.Set<Employees>().Find(guid);
+            var entity = _context.Set<TEntity>().Find(guid);
+            _context.ChangeTracker.Clear();
+            return entity;
         }
 
-        public Employees? Create(Employees employee)
+        public TEntity? Create(TEntity entity)
         {
             try
             {
-                _context.Set<Employees>().Add(employee);
+                _context.Set<TEntity>().Add(entity);
                 _context.SaveChanges();
-                return employee;
+                return entity;
             }
             catch
             {
-                return new Employees();
+                return null;
             }
         }
 
-        public bool Update(Employees employee)
+        public bool Update(TEntity entity)
         {
             try
             {
-                _context.Set<Employees>().Update(employee);
+                _context.Set<TEntity>().Update(entity);
                 _context.SaveChanges();
                 return true;
             }
@@ -50,12 +52,11 @@ namespace BookingManagementApp.Repositories
             }
         }
 
-        public bool Delete(Guid guid)
+        public bool Delete(TEntity entity)
         {
             try
             {
-                var employee = _context.Set<Employees>().Find(guid);
-                _context.Set<Employees>().Remove(employee);
+                _context.Set<TEntity>().Remove(entity);
                 _context.SaveChanges();
                 return true;
             }

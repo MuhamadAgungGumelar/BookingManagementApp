@@ -1,4 +1,7 @@
 ﻿using BookingManagementApp.Contracts;
+using BookingManagementApp.DTOs.Employee;
+using BookingManagementApp.DTOs.Role;
+using BookingManagementApp.DTOs.Room;
 using BookingManagementApp.Models;
 using BookingManagementApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookingManagementApp.Controllers
 {
     [ApiController]
-    [Route("/api[controller]")]
+    [Route("api/[controller]")]
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeesRepository _employeeRepository;
@@ -25,7 +28,9 @@ namespace BookingManagementApp.Controllers
                 return NotFound("Data Not Found");
             }
 
-            return Ok(result);
+            var data = result.Select(x => (EmployeeDto)x);
+
+            return Ok(data);
         }
 
         [HttpGet("{guid}")]
@@ -38,46 +43,58 @@ namespace BookingManagementApp.Controllers
                 return NotFound("Data Not Found");
             }
 
-            return Ok(result);
+            return Ok((EmployeeDto) result);
         }
 
         [HttpPost]
-        public IActionResult Create(Employees employee)
+        public IActionResult Create(CreateEmployeeDto createEmployeeDto)
         {
-            var result = _employeeRepository.Create(employee);
+            var result = _employeeRepository.Create(createEmployeeDto);
             if (result is null)
             {
                 return BadRequest("Failed to create data");
             }
 
-            return Ok(result);
+            return Ok((EmployeeDto) result);
         }
 
         [HttpPut]
-        public IActionResult Update(Employees employee)
+        public IActionResult Update(EmployeeDto employeeDto)
         {
-            var result = _employeeRepository.Update(employee);
-            if (result is false)
+            var entity = _employeeRepository.GetByGuid(employeeDto.Guid);
+            if (entity is null)
+            {
+                return NotFound("Id Not Found");
+            }
+
+            Employees toUpdate = employeeDto;
+            toUpdate.CreatedDate = entity.CreatedDate;
+
+            var result = _employeeRepository.Update(toUpdate);
+            if (!result)
             {
                 return BadRequest("Failed to update data");
             }
 
-            return Ok(result);
+            return Ok("Data Updated");
         }
 
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var employee = _employeeRepository.GetByGuid(guid);
-
-            if (employee is null)
+            var entity = _employeeRepository.GetByGuid(guid);
+            if (entity is null)
             {
-                return NotFound("Data Not Found");
+                return NotFound("Id Not Found");
             }
 
-            _employeeRepository.Delete(guid);
+            var result = _employeeRepository.Delete(entity);
+            if (!result)
+            {
+                return BadRequest("Failed to delete data");
+            }
 
-            return Ok("Data deleted successfully");
+            return Ok("Data Deleted");
         }
     }
 }
