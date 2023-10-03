@@ -2,6 +2,7 @@ using BookingManagementApp.Contracts;
 using BookingManagementApp.Data;
 using Microsoft.EntityFrameworkCore;
 using BookingManagementApp.Repositories;
+using BookingManagementApp.Utilities.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddScoped<IEducationsRepository, EducationsRepository>();
 builder.Services.AddScoped<IBookingsRepository, BookingsRepository>();
 builder.Services.AddScoped<IAccountsRepository, AccountsRepository>();
 builder.Services.AddScoped<IAccountRolesRepository, AccountRolesRepository>();
+builder.Services.AddScoped<GenerateHandler>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

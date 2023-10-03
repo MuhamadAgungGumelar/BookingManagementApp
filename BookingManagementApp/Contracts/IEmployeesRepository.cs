@@ -2,5 +2,8 @@
 
 namespace BookingManagementApp.Contracts
 {
-    public interface IEmployeesRepository : IGeneralRepository<Employees> { }
+    public interface IEmployeesRepository : IGeneralRepository<Employees>
+    { 
+        string GetLastNik();
+    }
 }

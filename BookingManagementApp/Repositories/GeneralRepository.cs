@@ -5,9 +5,9 @@ namespace BookingManagementApp.Repositories
 {
     public class GeneralRepository<TEntity> : IGeneralRepository<TEntity> where TEntity : class
     {
-        private readonly BookingManagementDbContext _context;
+        public readonly BookingManagementDbContext _context;
 
-        protected GeneralRepository(BookingManagementDbContext context)
+        public GeneralRepository(BookingManagementDbContext context)
         {
             _context = context;
         }

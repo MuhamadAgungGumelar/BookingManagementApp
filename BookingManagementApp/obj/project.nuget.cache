@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "6qz4LsI22vAfv9AkU6k6/mvKV1LpUrl9zLbGhA00SGSkrpZsW86t7PoRDPaCUVarFeal7GnJQ4iMb05IMvIuug==",
+  "dgSpecHash": "JzPCe/pDfBakRO39Ck9F1AGpV/WDT1ePxCvb8hCwOKdapIaRb/rU1LY9umZTQMx4hHYZRX3/TU0+4Zo4fT4d1Q==",
   "success": true,
   "projectFilePath": "E:\\Data_Penting\\Document\\digitalent\\MetroData\\Visual Studio\\BookingManagementApp\\BookingManagementApp\\BookingManagementApp.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\goeng\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\goeng\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\goeng\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\goeng\\.nuget\\packages\\microsoft.data.sqlclient\\2.1.4\\microsoft.data.sqlclient.2.1.4.nupkg.sha512",

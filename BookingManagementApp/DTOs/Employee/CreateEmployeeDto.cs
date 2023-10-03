@@ -7,7 +7,6 @@ namespace BookingManagementApp.DTOs.Employee
 {
     public class CreateEmployeeDto
     {
-        public string Nik { get; set; }
         public string FirstName { get; set; }
         public string? LastName { get; set; }
         public DateTime BirthDate { get; set; }
@@ -20,7 +19,6 @@ namespace BookingManagementApp.DTOs.Employee
         {
             return new Employees
             {
-                Nik = createEmployeeDto.Nik,
                 FirstName = createEmployeeDto.FirstName,
                 LastName = createEmployeeDto.LastName, 
                 BirthDate = createEmployeeDto.BirthDate,

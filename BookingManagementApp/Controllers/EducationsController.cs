@@ -1,8 +1,11 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.DTOs.Education;
 using BookingManagementApp.DTOs.Employee;
+using BookingManagementApp.DTOs.Role;
 using BookingManagementApp.Models;
+using BookingManagementApp.Utilities.Handlers;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BookingManagementApp.Controllers
 {
@@ -23,12 +26,17 @@ namespace BookingManagementApp.Controllers
             var result = _educationRepository.GetAll();
             if (!result.Any())
             {
-                return NotFound("Data Not Found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
 
             var data = result.Select(x => (EducationDto)x);
 
-            return Ok(data);
+            return Ok(new ResponseOKHandler<IEnumerable<EducationDto>>(data));
         }
 
         [HttpGet("{guid}")]
@@ -38,61 +46,104 @@ namespace BookingManagementApp.Controllers
 
             if (result is null)
             {
-                return NotFound("Data Not Found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
 
-            return Ok((EducationDto) result);
+            return Ok(new ResponseOKHandler<EducationDto>((EducationDto)result));
         }
 
         [HttpPost]
         public IActionResult Create(CreateEducationDto createEducationDto)
         {
-            var result = _educationRepository.Create(createEducationDto);
-            if (result is null)
+            try
             {
-                return BadRequest("Failed to create data");
-            }
+                var result = _educationRepository.Create(createEducationDto);
 
-            return Ok((EducationDto) result);
+                return Ok(new ResponseOKHandler<EducationDto>((EducationDto) result));
+            }
+            catch (ExceptionHandler ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPut]
         public IActionResult Update(EducationDto educationDto)
         {
-            var entity = _educationRepository.GetByGuid(educationDto.Guid);
-            if (entity is null)
+            try
             {
-                return NotFound("Id Not Found");
+                var entity = _educationRepository.GetByGuid(educationDto.Guid);
+                if (entity is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+
+                Educations toUpdate = educationDto;
+                toUpdate.CreatedDate = entity.CreatedDate;
+
+                var result = _educationRepository.Update(toUpdate);
+
+                return Ok(new ResponseOKHandler<string>("Data Updated"));
             }
-
-            Educations toUpdate = educationDto;
-            toUpdate.CreatedDate = entity.CreatedDate;
-
-            var result = _educationRepository.Update(toUpdate);
-            if (!result)
+            catch (ExceptionHandler ex)
             {
-                return BadRequest("Failed to update data");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-
-            return Ok("Data Updated");
         }
 
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var entity = _educationRepository.GetByGuid(guid);
-            if (entity is null)
+            try
             {
-                return NotFound("Id Not Found");
-            }
+                var entity = _educationRepository.GetByGuid(guid);
+                if (entity is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
 
-            var result = _educationRepository.Delete(entity);
-            if (!result)
+                var result = _educationRepository.Delete(entity);
+
+
+                return Ok(new ResponseOKHandler<string>("Data Deleted"));
+            }
+            catch (ExceptionHandler ex)
             {
-                return BadRequest("Failed to delete data");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-
-            return Ok("Data Deleted");
         }
     }
 }

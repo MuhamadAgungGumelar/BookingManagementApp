@@ -4,16 +4,21 @@ using BookingManagementApp.DTOs.Role;
 using BookingManagementApp.DTOs.Room;
 using BookingManagementApp.Models;
 using BookingManagementApp.Repositories;
+using BookingManagementApp.Utilities.Handlers;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BookingManagementApp.Controllers
 {
+    //Membuat API Controller menggunakan Framework AspNetCore serta membuat rute atau url API 
     [ApiController]
     [Route("api/[controller]")]
     public class EmployeesController : ControllerBase
     {
+        //membuat variable dengan cara injeksi
         private readonly IEmployeesRepository _employeeRepository;
 
+        //membuat constructor
         public EmployeesController(IEmployeesRepository employeeRepository)
         {
             _employeeRepository = employeeRepository;
@@ -22,79 +27,148 @@ namespace BookingManagementApp.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
+            //Memperoleh hasil data dengan method GETAll
             var result = _employeeRepository.GetAll();
-            if (!result.Any())
+            if (!result.Any()) // Pengondisian apabila data GETAll tidak ditemukan
             {
-                return NotFound("Data Not Found");
+                //Apabila data gagal ditemukan, akan menampilkan pesan data tidak ditemukan
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
+            //memilih data dari DTO untuk ditampilkan ke user, menerapkan casting DTO secara implisit/explisit
+            var data = result.Select(x => (EmployeeDto) x);
 
-            var data = result.Select(x => (EmployeeDto)x);
-
-            return Ok(data);
+            //Apabila Data Ditemukan, akan dikembalikan ke user dalam bentuk JSON API
+            return Ok(new ResponseOKHandler<IEnumerable<EmployeeDto>>(data));
         }
 
         [HttpGet("{guid}")]
         public IActionResult Get(Guid guid)
         {
+            //Memperoleh hasil data dengan method GETById
             var result = _employeeRepository.GetByGuid(guid);
 
-            if (result is null)
+            if (result is null) // Pengondisian apabila data GETById tidak ditemukan
             {
-                return NotFound("Data Not Found");
+                //Aoabila data gagal ditemukan berdasarkan Id, akan menampilkan pesan data tidak ditemukan
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
 
-            return Ok((EmployeeDto) result);
+            //Apabila Data Ditemukan, akan dikembalikan ke user dalam bentuk JSON API
+            return Ok(new ResponseOKHandler<EmployeeDto>((EmployeeDto) result));
         }
 
         [HttpPost]
         public IActionResult Create(CreateEmployeeDto createEmployeeDto)
         {
-            var result = _employeeRepository.Create(createEmployeeDto);
-            if (result is null)
+            try //Kondisi Try apabila Data Berhasil Ditambahkan
             {
-                return BadRequest("Failed to create data");
-            }
+                //Menambahkan data NIK dengan class GenerateHandler
+                Employees toCreate = createEmployeeDto;
+                toCreate.Nik = GenerateHandler.NIK(_employeeRepository.GetLastNik());
 
-            return Ok((EmployeeDto) result);
+                //Menambah hasil data dengan method POST
+                var result = _employeeRepository.Create(toCreate);
+                //Apabila Data Ditemukan, akan dikembalikan ke user dalam bentuk JSON API
+                return Ok(new ResponseOKHandler<EmployeeDto>((EmployeeDto)result));
+            } 
+            catch (ExceptionHandler ex) //Kondisi Exception apabila data gagal untuk ditambahkan
+            {
+                //Aoabila data gagal ditambahkan, akan mengembalikan pesan gagal membuat data
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
+            }
         }
 
         [HttpPut]
         public IActionResult Update(EmployeeDto employeeDto)
         {
-            var entity = _employeeRepository.GetByGuid(employeeDto.Guid);
-            if (entity is null)
+            try //Kondisi Try apabila Data Berhasil Diubah
             {
-                return NotFound("Id Not Found");
+                //Menyeleksi data yang akan diubah berdasarkan GuId
+                var entity = _employeeRepository.GetByGuid(employeeDto.Guid);
+                if (entity is null) // Pengondisian apabila data tidak ditemukan
+                {
+                    //Aoabila data gagal ditemukan, akan menampilkan pesan data tidak ditemukan
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                //Mengubah data CreatedDate dan NIK yang sudah ada sebelumnya
+                Employees toUpdate = employeeDto;
+                toUpdate.CreatedDate = entity.CreatedDate;
+                toUpdate.Nik = entity.Nik;
+
+                //Mengubah data dalam database dengan method PUT
+                var result = _employeeRepository.Update(toUpdate);
+
+                //Apabila Data Ditemukan, akan dikembalikan ke user dalam bentuk JSON API
+                return Ok(new ResponseOKHandler<string>("Data Updated"));
             }
-
-            Employees toUpdate = employeeDto;
-            toUpdate.CreatedDate = entity.CreatedDate;
-
-            var result = _employeeRepository.Update(toUpdate);
-            if (!result)
+            catch (ExceptionHandler ex) //Kondisi Exception apabila data gagal untuk diubah
             {
-                return BadRequest("Failed to update data");
+                //Aoabila data gagal diubah, akan mengembalikan pesan gagal mengubah data
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-
-            return Ok("Data Updated");
         }
 
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var entity = _employeeRepository.GetByGuid(guid);
-            if (entity is null)
+            try //Kondisi Try apabila Data Berhasil Dihapus
             {
-                return NotFound("Id Not Found");
-            }
+                //Menyeleksi data yang akan dihapus berdasarkan GuId
+                var entity = _employeeRepository.GetByGuid(guid);
+                if (entity is null) // Pengondisian apabila data tidak ditemukan
+                {
+                    //Aoabila data gagal ditemukan, akan menampilkan pesan data tidak ditemukan
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                //Menghapus data dalam database dengan method DELETE
+                var result = _employeeRepository.Delete(entity);
 
-            var result = _employeeRepository.Delete(entity);
-            if (!result)
+                //Apabila Data Ditemukan, akan dikembalikan ke user dalam bentuk JSON API
+                return Ok(new ResponseOKHandler<string>("Data Deleted"));
+            }
+            catch (ExceptionHandler ex) //Kondisi Exception apabila data gagal untuk dihapus
             {
-                return BadRequest("Failed to delete data");
+                //Aoabila data gagal dihapus, akan mengembalikan pesan gagal menghapus data
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-
-            return Ok("Data Deleted");
         }
     }
 }
