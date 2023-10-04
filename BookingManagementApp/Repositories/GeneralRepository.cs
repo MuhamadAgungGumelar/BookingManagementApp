@@ -1,5 +1,6 @@
 ﻿using BookingManagementApp.Contracts;
 using BookingManagementApp.Data;
+using BookingManagementApp.Utilities.Handlers;
 
 namespace BookingManagementApp.Repositories
 {
@@ -32,9 +33,21 @@ namespace BookingManagementApp.Repositories
                 _context.SaveChanges();
                 return entity;
             }
-            catch
+            catch (Exception ex) 
             {
-                return null;
+                if (ex.InnerException is not null && ex.InnerException.Message.Contains("IX_tb_m_employees_nik"))
+                {
+                    throw new ExceptionHandler("NIK already exists");
+                }
+                if (ex.InnerException is not null && ex.InnerException.Message.Contains("IX_tb_m_employees_email"))
+                {
+                    throw new ExceptionHandler("Email already exists");
+                }
+                if (ex.InnerException != null && ex.InnerException.Message.Contains("IX_tb_m_employees_phone_number"))
+                {
+                    throw new ExceptionHandler("Phone number already exists");
+                }
+                throw new ExceptionHandler(ex.InnerException?.Message ?? ex.Message);
             }
         }
 
@@ -46,9 +59,9 @@ namespace BookingManagementApp.Repositories
                 _context.SaveChanges();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                throw new ExceptionHandler(ex.InnerException?.Message ?? ex.Message);
             }
         }
 
@@ -60,9 +73,9 @@ namespace BookingManagementApp.Repositories
                 _context.SaveChanges();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                throw new ExceptionHandler(ex.InnerException?.Message ?? ex.Message);
             }
         }
     }
