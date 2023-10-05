@@ -23,8 +23,7 @@ namespace BookingManagementApp.Utilities.Validations.CreateValidator
 
             // Validasi IPK Tidak Boleh Kosong dan Menampilkan Pesan
             // Validasi IPK Harus Angka dan Menampilkan Pesan
-            RuleFor(ed => ed.Gpa).NotEmpty().WithMessage("IPK Tidak Boleh Kosong")
-                .IsInEnum().WithMessage("Harus Berisi Angka");
+            RuleFor(ed => ed.Gpa).NotEmpty().WithMessage("IPK Tidak Boleh Kosong");
 
             // Validasi ID Universitas Tidak Boleh Kosong dan Menampilkan Pesan
             RuleFor(ed => ed.UniversityGuid)

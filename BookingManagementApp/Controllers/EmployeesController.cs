@@ -17,11 +17,55 @@ namespace BookingManagementApp.Controllers
     {
         //membuat variable dengan cara injeksi
         private readonly IEmployeesRepository _employeeRepository;
+        private readonly IEducationsRepository _educationsRepository;
+        private readonly IUniversitiesRepository _universitiesRepository;
 
         //membuat constructor
-        public EmployeesController(IEmployeesRepository employeeRepository)
+        public EmployeesController(IEmployeesRepository employeeRepository, IEducationsRepository educationsRepository, IUniversitiesRepository universitiesRepository)
         {
             _employeeRepository = employeeRepository;
+            _educationsRepository = educationsRepository;
+            _universitiesRepository = universitiesRepository;
+        }
+
+        [HttpGet("details")]
+        public IActionResult GetDetails() 
+        {
+            var employees = _employeeRepository.GetAll();
+            var educations = _educationsRepository.GetAll();
+            var universities = _universitiesRepository.GetAll();
+
+            if (!(employees.Any() && educations.Any() && universities.Any()))
+            {
+                //Apabila data gagal ditemukan, akan menampilkan pesan data tidak ditemukan
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
+            }
+
+            var employeesDetails = from emp in employees
+                                   join edu in educations on emp.Guid equals edu.Guid
+                                   join uni in universities on edu.UniversityGuid equals uni.Guid
+                                   select new EmployeeDetailDto
+                                   {
+                                       Guid = emp.Guid,
+                                       Nik = emp.Nik,
+                                       FullName = string.Concat(emp.FirstName, " ", emp.LastName),
+                                       BirthDate = emp.BirthDate,
+                                       Gender = emp.Gender,
+                                       HiringDate = emp.HiringDate,
+                                       Email = emp.Email,
+                                       Phone = emp.PhoneNumber,
+                                       Major = edu.Major,
+                                       Degree = edu.Degree,
+                                       Gpa = edu.Gpa,
+                                       University = uni.Name
+                                   };
+
+            return Ok(new ResponseOKHandler<IEnumerable<EmployeeDetailDto>>(employeesDetails));
         }
 
         [HttpGet]

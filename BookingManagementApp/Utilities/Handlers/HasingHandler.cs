@@ -13,7 +13,7 @@ namespace BookingManagementApp.Utilities.Handlers
             return BCrypt.Net.BCrypt.HashPassword(password, GetRandomSalt());
         }
 
-        private static bool VerifyPassword(string password, string hashedPassword)
+        public static bool VerifyPassword(string password, string hashedPassword)
         {
             return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
