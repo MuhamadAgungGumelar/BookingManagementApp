@@ -6,14 +6,18 @@ using BookingManagementApp.Models;
 using BookingManagementApp.Repositories;
 using BookingManagementApp.Utilities.Handlers;
 using BookingManagementApp.Utilities.Validations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace BookingManagementApp.Controllers
 {
     //Membuat API Controller menggunakan Framework AspNetCore serta membuat rute atau url API 
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AccountsController : ControllerBase
     {
         //membuat variable dengan cara injeksi
@@ -22,18 +26,25 @@ namespace BookingManagementApp.Controllers
         private readonly IUniversitiesRepository _universitiesRepository;
         private readonly IEducationsRepository _educationsRepository;
         private readonly IEmailHandler _emailHandler;
+        private readonly ITokenHandler _tokenHandler;
+        private readonly IAccountRolesRepository _accountRolesRepository;
+        private readonly IRolesRepository _roleRepository;
 
         //membuat constructor
-        public AccountsController(IAccountsRepository accountRepository, IEmployeesRepository employeeRepository, IUniversitiesRepository universitiesRepository, IEducationsRepository educationsRepository, IEmailHandler emailHandler)
+        public AccountsController(IAccountsRepository accountRepository, IEmployeesRepository employeeRepository, IUniversitiesRepository universitiesRepository, IEducationsRepository educationsRepository, IEmailHandler emailHandler, ITokenHandler tokenHandler, IAccountRolesRepository accountRolesRepository, IRolesRepository roleRepository)
         {
             _accountRepository = accountRepository;
             _employeeRepository = employeeRepository;
             _universitiesRepository = universitiesRepository;
             _educationsRepository = educationsRepository;
             _emailHandler = emailHandler;
+            _tokenHandler = tokenHandler;
+            _accountRolesRepository = accountRolesRepository;
+            _roleRepository = roleRepository;
         }
 
         [HttpGet]
+        [Authorize(Roles = "user, manager")]
         public IActionResult GetAll()
         {
             //Memperoleh hasil data dengan method GETAll
@@ -140,6 +151,7 @@ namespace BookingManagementApp.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPut("ForgotPassword/{email}")]
         public IActionResult ForgotPassword(string email)
         {
@@ -302,6 +314,7 @@ namespace BookingManagementApp.Controllers
             return Ok(new ResponseOKHandler<IEnumerable<RegisterAccountDto>>(registerDetails));
         }
 
+        [AllowAnonymous]
         [HttpPost("Register")]
         public IActionResult Register (RegisterAccountDto registerAccountDto)
         {
@@ -382,6 +395,12 @@ namespace BookingManagementApp.Controllers
 
                     // Mengirimkan Object Accounts Baru Ke Database
                     var newAccountResult = _accountRepository.Create(newAccount);
+
+                    var accountRole = _accountRolesRepository.Create(new AccountRoles
+                    {
+                        AccountGuid = newAccount.Guid,
+                        RoleGuid = _roleRepository.GetDefaultRoleGuid() ?? throw new Exception("Default Role Not Found")
+                    });
                 }
 
                 // Jika semua operasi berhasil, mengirimkan respons berhasil ke klien
@@ -401,13 +420,15 @@ namespace BookingManagementApp.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("Login")]
         public IActionResult Login(LoginAccountDto loginAccountDto)
         {
             try
             {
                 // Mendapatkan Data Account Berdasarkan Email
-                var loginAccount = _accountRepository.GetByEmail(loginAccountDto.Email);
+                var loginAccount = _employeeRepository.GetByEmail(loginAccountDto.Email);
+                var loginAccount2 = _accountRepository.GetByEmail(loginAccountDto.Email);
                 //Apabila data Email gagal ditemukan, akan menampilkan pesan data Email tidak ditemukan
                 if (loginAccount == null)
                 {
@@ -420,7 +441,7 @@ namespace BookingManagementApp.Controllers
                 }
 
                 // Melakukan validasi berdasarkan password
-                if (!HasingHandler.VerifyPassword(loginAccountDto.Password, loginAccount.Password))
+                if (!HasingHandler.VerifyPassword(loginAccountDto.Password, loginAccount2.Password))
                 {
                     return BadRequest(new ResponseErrorHandler
                     {
@@ -430,8 +451,24 @@ namespace BookingManagementApp.Controllers
                     });
                 }
 
+                var claims = new List<Claim>();
+                claims.Add(new Claim("Email", loginAccount.Email));
+                claims.Add(new Claim("FullName", string.Concat(loginAccount.FirstName + " " + loginAccount.LastName)));
+
+                var getRoleName = from ar in _accountRolesRepository.GetAll()
+                                  join r in _roleRepository.GetAll() on ar.RoleGuid equals r.Guid
+                                  where ar.AccountGuid == loginAccount2.Guid
+                                  select r.Name;
+
+                foreach (var roleName in getRoleName)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, roleName));
+                }
+
+                var generateToken = _tokenHandler.Generate(claims);
+
                 // Jika login sukses, Akan mengirimkan respons berhasil ke klien
-                return Ok(new ResponseOKHandler<string>("Login successful"));
+                return Ok(new ResponseOKHandler<object>("Login successful", new {Token = generateToken}));
             }
             catch (ExceptionHandler ex)
             {

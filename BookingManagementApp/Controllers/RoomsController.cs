@@ -14,10 +14,14 @@ namespace BookingManagementApp.Controllers
     public class RoomsController : ControllerBase
     {
         private readonly IRoomsRepository _roomRepository;
+        private readonly IBookingsRepository _bookingRepository;
+        private readonly IEmployeesRepository _employeesRepository;
 
-        public RoomsController(IRoomsRepository roomRepository)
+        public RoomsController(IRoomsRepository roomRepository, IBookingsRepository bookingsRepository, IEmployeesRepository employeesRepository)
         {
             _roomRepository = roomRepository;
+            _bookingRepository = bookingsRepository;
+            _employeesRepository = employeesRepository;
         }
 
         [HttpGet]
@@ -143,6 +147,71 @@ namespace BookingManagementApp.Controllers
                     Error = ex.Message
                 });
             }
+        }
+
+        [HttpGet("RoomDetails")]
+        public IActionResult RoomDetail()
+        {
+            //Memperoleh hasil data dengan method GETAll
+            var employees = _employeesRepository.GetAll();
+            var bookings = _bookingRepository.GetAll();
+            var rooms = _roomRepository.GetAll();
+
+            // Pengondisian apabila data GETAll tidak ditemukan
+            if (!(employees.Any() && bookings.Any() && rooms.Any()))
+            {
+                //Apabila data gagal ditemukan, akan menampilkan pesan data tidak ditemukan
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
+            }
+
+            // Menampilkan data baru yang diambil dari tabel employees, bookings dan rooms
+            var roomDetails = from emp in employees
+                              join bk in bookings on emp.Guid equals bk.EmployeeGuid
+                              join rm in rooms on bk.RoomGuid equals rm.Guid
+                              select new RoomDetailDto
+                              {
+                                  BookingGuid = bk.Guid,
+                                  RoomName = rm.Name,
+                                  Status = bk.Status,
+                                  Floor = rm.Floor,
+                                  BookedBy = string.Concat(emp.FirstName + " " + emp.LastName)
+                              };
+
+            //Apabila Data Ditemukan, akan dikembalikan ke user dalam bentuk JSON API
+            return Ok(new ResponseOKHandler<IEnumerable<RoomDetailDto>>(roomDetails));
+        }
+
+        [HttpGet("AvailableRoomsToday")]
+        public IActionResult GetAvailableRoomsToday()
+        {
+            // Dapatkan daftar semua kamar
+            var allRooms = _roomRepository.GetAll();
+
+            // Dapatkan daftar semua pemesanan pada hari ini
+            var today = DateTime.Today;
+            var bookingsToday = _bookingRepository.GetBookingsForDate(today);
+
+            // Temukan kamar yang tidak memiliki pemesanan pada hari ini
+            var availableRooms = allRooms.Where(room =>
+                !bookingsToday.Any(booking => booking.RoomGuid == room.Guid)
+            ).Select(room => new RoomDto
+            {
+                Guid = room.Guid,
+                Name = room.Name,
+                Floor = room.Floor,
+                Capacity = room.Capacity
+            });
+
+            //Apabila Data Ditemukan, akan dikembalikan ke user dalam bentuk JSON API
+            return Ok(new ResponseOKHandler<IEnumerable<RoomDto>>("Available rooms today retrieved successfully")
+            {
+                Data = availableRooms
+            });
         }
     }
 }

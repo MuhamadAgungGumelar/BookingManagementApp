@@ -2,5 +2,8 @@
 
 namespace BookingManagementApp.Contracts
 {
-    public interface IRolesRepository: IGeneralRepository<Roles> { }
+    public interface IRolesRepository: IGeneralRepository<Roles> 
+    {
+        public Guid? GetDefaultRoleGuid();
+    }
 }

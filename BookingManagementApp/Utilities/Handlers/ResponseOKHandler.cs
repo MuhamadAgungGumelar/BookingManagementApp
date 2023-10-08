@@ -9,6 +9,7 @@ namespace BookingManagementApp.Utilities.Handlers
         public int Code { get; set; }
         public string Status { get; set; }
         public string Message { get; set; }
+        public object Token { get; set; }
         public TEntity? Data { get; set; }
 
         //Constructor untuk respons apabila berhasil mengirimkan dan menampilkan data 
@@ -26,6 +27,14 @@ namespace BookingManagementApp.Utilities.Handlers
             Code = StatusCodes.Status200OK;
             Status = HttpStatusCode.OK.ToString();
             Message = message;
+        }
+
+        public ResponseOKHandler(string message, object token)
+        {
+            Code = StatusCodes.Status200OK;
+            Status = HttpStatusCode.OK.ToString();
+            Message = message;
+            Token = token;
         }
     }
 }

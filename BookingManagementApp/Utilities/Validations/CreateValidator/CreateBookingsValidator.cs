@@ -1,4 +1,5 @@
 ﻿using BookingManagementApp.DTOs.Booking;
+using BookingManagementApp.Utilities.Enums;
 using FluentValidation;
 
 namespace BookingManagementApp.Utilities.Validations.CreateValidator
@@ -17,8 +18,11 @@ namespace BookingManagementApp.Utilities.Validations.CreateValidator
             RuleFor(b => b.EndDate)
                .NotEmpty().WithMessage("Tanggal Akhir Booking Tidak Boleh Kosong");
 
-            // Validasi Status Booking Tidak Boleh Kosong dan Menampilkan Pesan
-            RuleFor(b => b.Status).NotEmpty().WithMessage("Status Booking Tidak Boleh Kosong");
+            RuleFor(b => b.Status)
+                .NotNull().WithMessage("Status Booking Tidak Boleh Kosong")
+                .IsInEnum().WithMessage("Harus Berisi Angka yang Valid")
+                .Must(status => Enum.IsDefined(typeof(StatuslLevel), status))
+                .WithMessage("Harus Berisi Status yang Valid");
 
             // Validasi Keterangan Tidak Boleh Kosong dan Menampilkan Pesan
             RuleFor(b => b.Remarks).NotEmpty().WithMessage("Keterangan Tidak Boleh Kosong");

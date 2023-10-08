@@ -18,5 +18,10 @@ namespace BookingManagementApp.Repositories
             var lastNik = _context.Set<Employees>().OrderByDescending(x => x.Nik).Select(x => x.Nik).FirstOrDefault();
             return lastNik;
         }
+
+        public Employees? GetByEmail(string email)
+        {
+            return _context.Set<Employees>().FirstOrDefault(x => x != null && x.Email == email);
+        }
     }
 }

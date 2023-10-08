@@ -70,3 +70,4 @@ E:\Data_Penting\Document\digitalent\MetroData\Visual Studio\BookingManagementApp
 E:\Data_Penting\Document\digitalent\MetroData\Visual Studio\BookingManagementApp\BookingManagementApp\bin\Debug\net6.0\FluentValidation.dll
 E:\Data_Penting\Document\digitalent\MetroData\Visual Studio\BookingManagementApp\BookingManagementApp\bin\Debug\net6.0\FluentValidation.AspNetCore.dll
 E:\Data_Penting\Document\digitalent\MetroData\Visual Studio\BookingManagementApp\BookingManagementApp\bin\Debug\net6.0\FluentValidation.DependencyInjectionExtensions.dll
+E:\Data_Penting\Document\digitalent\MetroData\Visual Studio\BookingManagementApp\BookingManagementApp\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

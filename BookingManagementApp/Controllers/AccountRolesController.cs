@@ -14,10 +14,16 @@ namespace BookingManagementApp.Controllers
     public class AccountRolesController : ControllerBase
     {
         private readonly IAccountRolesRepository _accountRoleRepository;
+        private readonly IEmployeesRepository _employeesRepository;
+        private readonly IRolesRepository _rolesRepository;
+        private readonly IAccountsRepository _accountsRepository;
 
-        public AccountRolesController(IAccountRolesRepository accountRoleRepository)
+        public AccountRolesController(IAccountRolesRepository accountRoleRepository, IEmployeesRepository employeesRepository, IRolesRepository rolesRepository, IAccountsRepository accountsRepository)
         {
             _accountRoleRepository = accountRoleRepository;
+            _employeesRepository = employeesRepository;
+            _rolesRepository = rolesRepository;
+            _accountsRepository = accountsRepository;
         }
 
         [HttpGet]
@@ -144,6 +150,41 @@ namespace BookingManagementApp.Controllers
                     Error = ex.Message
                 });
             }
+        }
+
+        [HttpGet("DetailAccountRole")]
+        public IActionResult DetailAccountRole()
+        {
+            var accountRoles = _accountRoleRepository.GetAll();
+            var employees = _employeesRepository.GetAll();
+            var roles = _rolesRepository.GetAll();
+            var accounts = _accountsRepository.GetAll();
+
+            if (!(employees.Any() && roles.Any() && accountRoles.Any()))
+            {
+                //Apabila data gagal ditemukan, akan menampilkan pesan data tidak ditemukan
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
+            }
+
+            var accountRoleDetails = from emp in employees
+                                  join acc in accounts on emp.Guid equals acc.Guid
+                                  join acr in accountRoles on acc.Guid equals acr.AccountGuid
+                                  join rl in roles on acr.RoleGuid equals rl.Guid
+                                  select new DetailAccountRoleDto
+                                  {
+                                      Guid = acr.Guid,
+                                      AccountGuid = acc.Guid,
+                                      RoleGuid = rl.Guid,
+                                      FullName = string.Concat(emp.FirstName, " ", emp.LastName),
+                                      RoleName = rl.Name
+                                  };
+
+            return Ok(new ResponseOKHandler<IEnumerable<DetailAccountRoleDto>>(accountRoleDetails));
         }
     }
 }
